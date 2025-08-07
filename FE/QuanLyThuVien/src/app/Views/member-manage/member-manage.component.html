@@ -1,0 +1,221 @@
+<div class="row">
+      <div class="col-md-12">
+        <h2 class="mb-4">👥 Quản Lý Thành Viên</h2>
+      </div>
+    </div>
+
+    <!-- Search and Add -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Tìm kiếm thành viên..." 
+                 [(ngModel)]="searchTerm" (keyup.enter)="search()">
+          <button class="btn btn-outline-secondary" type="button" (click)="search()">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-6 text-end">
+        <button class="btn btn-primary" (click)="openMemberModal()">
+          <i class="fas fa-plus"></i> Thêm thành viên
+        </button>
+      </div>
+    </div>
+
+    <!-- Members Table -->
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Mã TV</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Điện thoại</th>
+                <th>Ngày sinh</th>
+                <th>Ngày tham gia</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let member of members">
+                <td>{{member.memberCode}}</td>
+                <td>{{member.fullName}}</td>
+                <td>{{member.email}}</td>
+                <td>{{member.phone}}</td>
+                <td>{{member.dateOfBirth | date:'dd/MM/yyyy'}}</td>
+                <td>{{member.membershipDate | date:'dd/MM/yyyy'}}</td>
+                <td>
+                  <span class="badge" 
+                        [class.bg-success]="member.isActive" 
+                        [class.bg-secondary]="!member.isActive">
+                    {{member.isActive ? 'Hoạt động' : 'Ngừng hoạt động'}}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-info me-1" 
+                          (click)="viewMemberHistory(member.memberId!)">
+                    <i class="fas fa-history"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-primary me-1" 
+                          (click)="editMember(member)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-warning me-1" 
+                          (click)="toggleMemberStatus(member.memberId!, member.isActive)">
+                    <i class="fas fa-toggle-on" *ngIf="member.isActive"></i>
+                    <i class="fas fa-toggle-off" *ngIf="!member.isActive"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" 
+                          (click)="deleteMember(member.memberId!)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Member Modal -->
+    <div class="modal fade" id="memberModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{isEditMode ? 'Sửa' : 'Thêm'}} Thành viên</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form #memberForm="ngForm">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Mã thành viên *</label>
+                  <input type="text" class="form-control" 
+                         [(ngModel)]="currentMember.memberCode" 
+                         name="memberCode" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Họ tên *</label>
+                  <input type="text" class="form-control" 
+                         [(ngModel)]="currentMember.fullName" 
+                         name="fullName" required>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" 
+                         [(ngModel)]="currentMember.email" 
+                         name="email">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Điện thoại</label>
+                  <input type="text" class="form-control" 
+                         [(ngModel)]="currentMember.phone" 
+                         name="phone">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Địa chỉ</label>
+                <textarea class="form-control" rows="2" 
+                          [(ngModel)]="currentMember.address" 
+                          name="address"></textarea>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Ngày sinh *</label>
+                  <input type="date" class="form-control" 
+                         [(ngModel)]="currentMember.dateOfBirth" 
+                         name="dateOfBirth" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Ngày tham gia *</label>
+                  <input type="date" class="form-control" 
+                         [(ngModel)]="currentMember.membershipDate" 
+                         name="membershipDate" required>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" 
+                         [(ngModel)]="currentMember.isActive" 
+                         name="isActive" id="isActive">
+                  <label class="form-check-label" for="isActive">
+                    Hoạt động
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Hủy
+            </button>
+            <button type="button" class="btn btn-primary" 
+                    (click)="saveMember()" [disabled]="!memberForm.form.valid">
+              {{isEditMode ? 'Cập nhật' : 'Thêm mới'}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal fade" id="historyModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Lịch sử mượn sách</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Sách</th>
+                    <th>Ngày mượn</th>
+                    <th>Hạn trả</th>
+                    <th>Ngày trả</th>
+                    <th>Trạng thái</th>
+                    <th>Phạt</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let record of memberHistory">
+                    <td>{{record.book?.title}}</td>
+                    <td>{{record.borrowDate | date:'dd/MM/yyyy'}}</td>
+                    <td>{{record.dueDate | date:'dd/MM/yyyy'}}</td>
+                    <td>{{record.returnDate ? (record.returnDate | date:'dd/MM/yyyy') : 'Chưa trả'}}</td>
+                    <td>
+                      <span class="badge" 
+                            [class.bg-success]="record.isReturned" 
+                            [class.bg-warning]="!record.isReturned">
+                        {{record.isReturned ? 'Đã trả' : 'Đang mượn'}}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="text-danger" *ngIf="record.fineAmount > 0">
+                        {{record.fineAmount | currency:'VND':'symbol':'1.0-0'}}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>

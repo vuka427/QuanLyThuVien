@@ -1,0 +1,128 @@
+<!-- Hero Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4 ">Hệ thống quản lý thư viện</h1>
+            <p class="lead">Giao diện mượn trả sách nhanh chóng và tiện lợi.</p>
+            <div class="text-center">
+              <button class="btn btn-primary btn-lg py-3 fw-semibold " (click)="navigateLogin()" >
+                <span>
+                    <i class="fas fa-sign-in-alt me-2"></i>
+                    Đăng nhập
+                </span>
+              </button>
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+<!-- Content Sections -->
+<section id="home" class="mb-5">
+    <h2 class="mb-4">Mượn - Trả Sách</h2>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="bg-success rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-white fs-4">📚</span>
+                    </div>
+                    <h5 class="card-title">Mượn sách</h5>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#borrowModal">Thực hiện</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="bg-info rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-white fs-4">↩️</span>
+                    </div>
+                    <h5 class="card-title">Trả sách</h5>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#returnModal">Thực hiện</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="bg-warning rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-white fs-4">🔄</span>
+                    </div>
+                    <h5 class="card-title">Gia hạn</h5>
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#renewModal">Thực hiện</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="bg-primary rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-white fs-4">📋</span>
+                    </div>
+                    <h5 class="card-title">Tra cứu</h5>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchModal">Thực hiện</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Giao dịch gần đây</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Mã độc giả</th>
+                                    <th>Tên độc giả</th>
+                                    <th>Mã sách</th>
+                                    <th>Tên sách</th>
+                                    <th>Loại giao dịch</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>08:30 07/08/2025</td>
+                                    <td>DG001</td>
+                                    <td>Nguyễn Văn A</td>
+                                    <td>MS001</td>
+                                    <td>Lập trình Python</td>
+                                    <td><span class="badge bg-success">Mượn</span></td>
+                                    <td><span class="badge bg-info">Hoàn thành</span></td>
+                                </tr>
+                                <tr>
+                                    <td>08:15 07/08/2025</td>
+                                    <td>DG002</td>
+                                    <td>Trần Thị B</td>
+                                    <td>MS002</td>
+                                    <td>Cơ sở dữ liệu</td>
+                                    <td><span class="badge bg-info">Trả</span></td>
+                                    <td><span class="badge bg-info">Hoàn thành</span></td>
+                                </tr>
+                                <tr>
+                                    <td>08:00 07/08/2025</td>
+                                    <td>DG003</td>
+                                    <td>Lê Văn C</td>
+                                    <td>MS003</td>
+                                    <td>Thuật toán</td>
+                                    <td><span class="badge bg-warning">Gia hạn</span></td>
+                                    <td><span class="badge bg-info">Hoàn thành</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

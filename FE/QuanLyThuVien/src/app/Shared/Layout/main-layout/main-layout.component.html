@@ -1,0 +1,56 @@
+ <!-- Navigation Menu -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">📚 Hệ thống quản lý thư viện</a>
+            
+            <!-- Mobile toggle button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" (click)="navigateHome()">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" (click)="navigateBookManage()">Quản lý sách</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" (click)="navigateMemberManage()">Quản lý độc giả</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" (click)="navigateAuthorManage()">Quản lý tác giả</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-5" style="min-height: 74vh;">
+        <router-outlet />
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Hệ Thống Thông Tin Phân Tán.</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="#" class="text-light me-3">Chính sách bảo mật</a>
+                    <a href="#" class="text-light">Điều khoản sử dụng</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+   
+    
+ 
+   
+    
+

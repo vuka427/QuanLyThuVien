@@ -1,0 +1,19 @@
+<div class="spinner-overlay" *ngIf="isLoading">
+  <div class="spinner-container">
+    <!-- CSS Spinner -->
+    <div class="spinner" *ngIf="type === 'default'"></div>
+    
+    <!-- Dots Spinner -->
+    <div class="dots-spinner" *ngIf="type === 'dots'">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    
+    <!-- Pulse Spinner -->
+    <div class="pulse-spinner" *ngIf="type === 'pulse'"></div>
+    
+    <!-- Text with spinner -->
+    <p class="loading-text" *ngIf="message">{{ message }}</p>
+  </div>
+</div>

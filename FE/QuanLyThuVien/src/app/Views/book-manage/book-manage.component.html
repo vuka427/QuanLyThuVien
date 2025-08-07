@@ -1,0 +1,173 @@
+ <div class="row">
+      <div class="col-md-12">
+        <h2 class="mb-4">📚 Quản lý Sách</h2>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Tìm kiếm sách..." 
+                 [(ngModel)]="searchTerm" (keyup.enter)="search()">
+          <button class="btn btn-outline-secondary" type="button" (click)="search()">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="selectedCategoryId" (change)="search()">
+          <option value="">Tất cả thể loại</option>
+          <option *ngFor="let category of categories" [value]="category.categoryId">
+            {{category.categoryName}}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [(ngModel)]="selectedAuthorId" (change)="search()">
+          <option value="">Tất cả tác giả</option>
+          <option *ngFor="let author of authors" [value]="author.authorId">
+            {{author.fullName}}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" (click)="openBookModal()">
+          <i class="fas fa-plus"></i> Thêm sách
+        </button>
+      </div>
+    </div>
+
+    <!-- Books Table -->
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>ISBN</th>
+                <th>Tiêu đề</th>
+                <th>Tác giả</th>
+                <th>Thể loại</th>
+                <th>NXB</th>
+                <th>Tổng số</th>
+                <th>Có sẵn</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let book of books">
+                <td>{{book.isbn}}</td>
+                <td>{{book.title}}</td>
+                <td>{{book.author}}</td>
+                <td>{{book.category?.categoryName}}</td>
+                <td>{{book.publisher}}</td>
+                <td>{{book.totalCopies}}</td>
+                <td>
+                  <span class="badge" 
+                        [class.bg-success]="book.availableCopies > 0" 
+                        [class.bg-danger]="book.availableCopies === 0">
+                    {{book.availableCopies}}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" 
+                          (click)="editBook(book)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" 
+                          (click)="deleteBook(book.bookId!)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Book Modal -->
+    <div class="modal fade" id="bookModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{isEditMode ? 'Sửa' : 'Thêm'}} Sách</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form #bookForm="ngForm">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">ISBN *</label>
+                  <input type="text" class="form-control" 
+                         [(ngModel)]="currentBook.isbn" 
+                         name="isbn" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Tiêu đề *</label>
+                  <input type="text" class="form-control" 
+                         [(ngModel)]="currentBook.title" 
+                         name="title" required>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Thể loại *</label>
+                  <select class="form-select" [(ngModel)]="currentBook.categoryId" 
+                          name="categoryId" required>
+                    <option value="">Chọn thể loại</option>
+                    <option *ngFor="let category of categories" [value]="category.categoryId">
+                      {{category.categoryName}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Tác giả</label>
+                  <select class="form-select" [(ngModel)]="selectedAuthorIds" 
+                          name="authorIds" multiple>
+                    <option *ngFor="let author of authors" [value]="author.authorId">
+                      {{author.fullName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Nhà xuất bản</label>
+                  <input type="text" class="form-control" 
+                         [(ngModel)]="currentBook.publisher" 
+                         name="publisher">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Ngày xuất bản</label>
+                  <input type="date" class="form-control" 
+                         [(ngModel)]="currentBook.publishedDate" 
+                         name="publishedDate">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Tổng số bản</label>
+                  <input type="number" class="form-control" min="1"
+                         [(ngModel)]="currentBook.totalCopies" 
+                         name="totalCopies">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Hủy
+            </button>
+            <button type="button" class="btn btn-primary" 
+                    (click)="saveBook()" [disabled]="!bookForm.form.valid">
+              {{isEditMode ? 'Cập nhật' : 'Thêm mới'}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
