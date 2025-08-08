@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../Services/auth.service';
 import { CommonModule } from '@angular/common';
+import {SubNavbarComponent} from '../../../Shared/Component/sub-navbar/sub-navbar.component'
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, SubNavbarComponent],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css']
 })

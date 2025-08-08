@@ -209,6 +209,7 @@ export class BorrowBookComponent implements OnInit, OnDestroy {
           this.submitting = false;
         }
       });
+      this.submitting = false;
   }
 
   public resetForm(): void {

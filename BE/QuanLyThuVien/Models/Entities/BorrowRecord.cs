@@ -28,7 +28,7 @@ namespace QuanLyThuVien.Models.Entities
         public bool FinePaid { get; set; } = false;
 
         [StringLength(500)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         // Navigation properties
         [ForeignKey("MemberId")]

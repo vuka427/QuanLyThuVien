@@ -1,7 +1,7 @@
  <!-- Navigation Menu -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">📚 Hệ thống quản lý thư viện</a>
+            <a class="navbar-brand" (click)="navigateHome()">📚 Hệ thống quản lý thư viện</a>
             
             <!-- Mobile toggle button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,6 +30,8 @@
             </div>
         </div>
     </nav>
+
+    <app-sub-navbar />
 
     <!-- Main Content -->
     <main class="container my-5" style="min-height: 74vh;">

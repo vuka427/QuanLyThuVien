@@ -27,16 +27,29 @@ namespace QuanLyThuVien.Controllers
         public async Task<ActionResult<ApiResponse>> GetBooks()
         {
             var books = await _context.Book
-                .Include(b => b.Category)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
-                .OrderBy(b => b.Title)
-                .ToListAsync();
+                    .Include(b => b.Category)
+                    .Include(b => b.BookAuthors)
+                        .ThenInclude(ba => ba.Author)
+                    .OrderBy(b => b.Title)
+                    .ToListAsync();
+
+            var bookDtos = books.Select(b => new BookDto
+            {
+                BookId = b.BookId,
+                Isbn = b.ISBN,
+                Title = b.Title,
+                CategoryName = b.Category?.CategoryName,
+                Authors = b.BookAuthors.Select(ba => new AuthorDto
+                {
+                    AuthorId = ba.Author.AuthorId,
+                    Name = ba.Author.FullName
+                }).ToList()
+            }).ToList();
 
             return Ok(new ApiResponse
             {
                 Success = true,
-                Data = books,
+                Data = bookDtos,
                 Message = "Lấy danh sách sách thành công",
                 StatusCode = StatusCodes.Status200OK
             });
@@ -73,12 +86,12 @@ namespace QuanLyThuVien.Controllers
         // GET: api/Book/search?term=clean&categoryId=1&authorId=2
         [HttpGet("search")]
         public async Task<ActionResult<ApiResponse>> SearchBooks(
-            string term, int? categoryId = null, int? authorId = null)
+     string term = null, int? categoryId = null, int? authorId = null)
         {
             var query = _context.Book
                 .Include(b => b.Category)
                 .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                    .ThenInclude(ba => ba.Author)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(term))
@@ -102,10 +115,24 @@ namespace QuanLyThuVien.Controllers
 
             var books = await query.OrderBy(b => b.Title).ToListAsync();
 
+            // Map sang DTO để tránh vòng lặp
+            var bookDtos = books.Select(b => new BookDto
+            {
+                BookId = b.BookId,
+                Isbn = b.ISBN,
+                Title = b.Title,
+                CategoryName = b.Category?.CategoryName,
+                Authors = b.BookAuthors.Select(ba => new AuthorDto
+                {
+                    AuthorId = ba.Author.AuthorId,
+                    Name = ba.Author.FullName,
+                }).ToList()
+            }).ToList();
+
             return Ok(new ApiResponse
             {
                 Success = true,
-                Data = books,
+                Data = bookDtos,
                 Message = "Tìm kiếm sách thành công",
                 StatusCode = StatusCodes.Status200OK
             });
@@ -118,19 +145,38 @@ namespace QuanLyThuVien.Controllers
             var books = await _context.Book
                 .Include(b => b.Category)
                 .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                    .ThenInclude(ba => ba.Author)
                 .Where(b => b.AvailableCopies > 0)
                 .OrderBy(b => b.Title)
                 .ToListAsync();
 
+            var bookDtos = books.Select(b => new BookDtoAv
+            {
+                BookId = b.BookId,
+                Isbn = b.ISBN,
+                Title = b.Title,
+                Publisher = b.Publisher,
+                PublishedDate = b.PublishedDate,
+                CategoryId = b.CategoryId,
+                CategoryName = b.Category?.CategoryName,
+                TotalCopies = b.TotalCopies,
+                AvailableCopies = b.AvailableCopies,
+                Authors = b.BookAuthors.Select(ba => new AuthorDto
+                {
+                    AuthorId = ba.Author.AuthorId,
+                    Name = ba.Author.FullName // hoặc PenName nếu muốn
+                }).ToList()
+            }).ToList();
+
             return Ok(new ApiResponse
             {
                 Success = true,
-                Data = books,
+                Data = bookDtos,
                 Message = "Lấy danh sách sách có sẵn thành công",
                 StatusCode = StatusCodes.Status200OK
             });
         }
+
 
         // POST: api/Book
         [HttpPost]
@@ -400,5 +446,46 @@ namespace QuanLyThuVien.Controllers
             return _context.Book.Any(e => e.BookId == id);
         }
     }
+
+    public class BookDto
+    {
+        public int BookId { get; set; }
+        public string Isbn { get; set; }
+        public string Title { get; set; }
+        public string CategoryName { get; set; }
+        public List<AuthorDto> Authors { get; set; }
+    }
+
+    public class AuthorDto
+    {
+        public int AuthorId { get; set; }
+        public string Name { get; set; }
+    }
+
+    
+
+    public class CategoryDto
+    {
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public List<BookDto> Books { get; set; }
+    }
+
+    public class BookDtoAv
+    {
+        public int BookId { get; set; }
+        public string Isbn { get; set; }
+        public string Title { get; set; }
+        public string Publisher { get; set; }
+        public DateTime PublishedDate { get; set; }
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public int TotalCopies { get; set; }
+        public int AvailableCopies { get; set; }
+        public List<AuthorDto> Authors { get; set; }
+    }
+
+    
+
 }
 

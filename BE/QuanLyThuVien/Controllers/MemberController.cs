@@ -93,22 +93,48 @@ namespace QuanLyThuVien.Controllers
         {
             var currentBorrows = await _context.BorrowRecord
                 .Include(br => br.Book)
-                .ThenInclude(b => b.Category)
+                    .ThenInclude(b => b.Category)
                 .Include(br => br.Book)
-                .ThenInclude(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                    .ThenInclude(b => b.BookAuthors)
+                        .ThenInclude(ba => ba.Author)
                 .Where(br => br.MemberId == id && !br.IsReturned)
                 .OrderBy(br => br.DueDate)
                 .ToListAsync();
 
+            var borrowDtos = currentBorrows.Select(br => new BorrowRecordDtoMb
+            {
+                BorrowId = br.BorrowId,
+                BorrowDate = br.BorrowDate,
+                DueDate = br.DueDate,
+                ReturnDate = br.ReturnDate,
+                IsReturned = br.IsReturned,
+                Notes = br.Notes,
+                Book = new BookShortDtoMb
+                {
+                    BookId = br.Book.BookId,
+                    Isbn = br.Book.ISBN,
+                    Title = br.Book.Title,
+                    Publisher = br.Book.Publisher,
+                    PublishedDate = br.Book.PublishedDate,
+                    CategoryId = br.Book.CategoryId,
+                    CategoryName = br.Book.Category?.CategoryName,
+                    Authors = br.Book.BookAuthors.Select(ba => new AuthorDtoMb
+                    {
+                        AuthorId = ba.Author.AuthorId,
+                        Name = ba.Author.FullName
+                    }).ToList()
+                }
+            }).ToList();
+
             return Ok(new ApiResponse
             {
                 Success = true,
-                Data = currentBorrows,
+                Data = borrowDtos,
                 Message = "Lấy danh sách sách đang mượn thành công",
                 StatusCode = StatusCodes.Status200OK
             });
         }
+
 
         // GET: api/Member/search?term=nguyen
         [HttpGet("search")]
@@ -291,4 +317,33 @@ namespace QuanLyThuVien.Controllers
             return _context.Member.Any(e => e.MemberId == id);
         }
     }
+    public class BorrowRecordDtoMb
+    {
+        public int BorrowId { get; set; }
+        public DateTime BorrowDate { get; set; }
+        public DateTime DueDate { get; set; }
+        public DateTime? ReturnDate { get; set; }
+        public bool IsReturned { get; set; }
+        public string Notes { get; set; }
+        public BookShortDtoMb Book { get; set; }
+    }
+
+    public class BookShortDtoMb
+    {
+        public int BookId { get; set; }
+        public string Isbn { get; set; }
+        public string Title { get; set; }
+        public string Publisher { get; set; }
+        public DateTime PublishedDate { get; set; }
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public List<AuthorDtoMb> Authors { get; set; }
+    }
+
+    public class AuthorDtoMb
+    {
+        public int AuthorId { get; set; }
+        public string Name { get; set; }
+    }
+
 }

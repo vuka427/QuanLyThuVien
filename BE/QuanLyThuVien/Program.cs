@@ -136,11 +136,11 @@ else
     Console.WriteLine("No migration");
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
-    QuanLyThuVien.AppContext.AppDBContextSeeder.SeedData(dbContext);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+//    QuanLyThuVien.AppContext.AppDBContextSeeder.SeedData(dbContext);
+//}
 
 if (app.Environment.IsDevelopment())
 {

@@ -100,7 +100,7 @@
                   <th width="15%">Ngày Mượn</th>
                   <th width="15%">Ngày Hết Hạn</th>
                   <th width="10%">Trạng Thái</th>
-                  <th width="10%">Phạt</th>
+                  
                 </tr>
               </thead>
               <tbody>
@@ -139,23 +139,7 @@
                       {{ getStatusText(borrow) }}
                     </span>
                   </td>
-                  <td>
-                    <div *ngIf="borrow.fineAmount > 0" class="text-danger fw-bold">
-                      {{ borrow.fineAmount | currency:'VND':'symbol':'1.0-0' }}
-                    </div>
-                    <div *ngIf="borrow.fineAmount === 0" class="text-muted">
-                      <i class="fas fa-check"></i>
-                    </div>
-                    <div *ngIf="borrow.fineAmount > 0 && !borrow.finePaid">
-                      <button 
-                        class="btn btn-sm btn-warning mt-1"
-                        (click)="payFine(borrow.borrowId); $event.stopPropagation()"
-                        title="Thanh toán phạt"
-                      >
-                        <i class="fas fa-dollar-sign"></i>
-                      </button>
-                    </div>
-                  </td>
+                 
                 </tr>
               </tbody>
             </table>
@@ -243,25 +227,7 @@
                     </span>
                   </div>
 
-                  <!-- Fine Information -->
-                  <div *ngIf="selectedBorrow.fineAmount > 0" class="mt-2 p-2 bg-danger-subtle rounded">
-                    <div class="text-danger fw-bold">
-                      <i class="fas fa-exclamation-triangle me-1"></i>
-                      Phạt: {{ selectedBorrow.fineAmount | currency:'VND':'symbol':'1.0-0' }}
-                    </div>
-                    <div *ngIf="!selectedBorrow.finePaid" class="mt-1">
-                      <button 
-                        type="button" 
-                        class="btn btn-warning btn-sm"
-                        (click)="payFine(selectedBorrow.borrowId)"
-                      >
-                        <i class="fas fa-dollar-sign me-1"></i>Thanh toán phạt
-                      </button>
-                    </div>
-                    <div *ngIf="selectedBorrow.finePaid" class="text-success mt-1">
-                      <i class="fas fa-check-circle me-1"></i>Đã thanh toán
-                    </div>
-                  </div>
+                  
                 </div>
               </div>
 

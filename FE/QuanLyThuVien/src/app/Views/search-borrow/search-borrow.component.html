@@ -10,15 +10,7 @@
           </h2>
           <p class="text-muted mb-0">Quản lý và tìm kiếm các bản ghi mượn sách</p>
         </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-success" (click)="exportToCSV()">
-            <i class="fas fa-download me-1"></i>Xuất CSV
-          </button>
-          <button class="btn btn-outline-secondary" (click)="toggleFilters()">
-            <i class="fas fa-filter me-1"></i>Bộ lọc
-            <i class="fas" [ngClass]="showFilters ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-          </button>
-        </div>
+       
       </div>
     </div>
   </div>
@@ -96,19 +88,10 @@
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center">
         <div class="text-muted">
-          Hiển thị {{ (currentPage - 1) * itemsPerPage + 1 }} - 
-          {{ getMinValue(currentPage * itemsPerPage, totalItems) }} 
-          trong tổng số {{ totalItems }} kết quả
+          Hiển thị {{ totalItems }} kết quả
         </div>
         <div class="d-flex align-items-center gap-2">
-          <span class="text-muted small">Hiển thị:</span>
-          <select class="form-select form-select-sm" style="width: auto" 
-                  [value]="itemsPerPage" (change)="changeItemsPerPage($event.target)">
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-          </select>
+          
         </div>
       </div>
     </div>
@@ -135,7 +118,6 @@
               <th scope="col" class="border-0">Ngày mượn</th>
               <th scope="col" class="border-0">Ngày hết hạn</th>
               <th scope="col" class="border-0">Trạng thái</th>
-              <th scope="col" class="border-0">Phí phạt</th>
               <th scope="col" class="border-0 text-center pe-4">Hành động</th>
             </tr>
           </thead>
@@ -215,20 +197,7 @@
                 </div>
               </td>
 
-              <td>
-                <div *ngIf="borrow.fineAmount > 0">
-                  <div class="fw-semibold text-danger">
-                    {{ formatCurrency(borrow.fineAmount) }}
-                  </div>
-                  <span class="badge rounded-pill" 
-                        [ngClass]="borrow.finePaid ? 'bg-success' : 'bg-warning text-dark'">
-                    {{ borrow.finePaid ? 'Đã thanh toán' : 'Chưa thanh toán' }}
-                  </span>
-                </div>
-                <div *ngIf="borrow.fineAmount === 0" class="text-muted">
-                  Không có phí
-                </div>
-              </td>
+             
 
               <td class="pe-4">
                 <div class="d-flex gap-1 justify-content-center">
@@ -240,13 +209,7 @@
                     <i class="fas fa-undo"></i>
                   </button>
 
-                  <!-- Pay fine button -->
-                  <button *ngIf="borrow.fineAmount > 0 && !borrow.finePaid" 
-                          class="btn btn-outline-warning btn-sm"
-                          (click)="onPayFine(borrow.borrowId)"
-                          title="Thanh toán phí phạt">
-                    <i class="fas fa-credit-card"></i>
-                  </button>
+                 
 
                   <!-- View details button -->
                   <button class="btn btn-outline-primary btn-sm"

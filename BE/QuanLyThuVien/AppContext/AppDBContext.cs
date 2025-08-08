@@ -19,6 +19,7 @@ namespace QuanLyThuVien.AppContext
         public DbSet<BorrowRecord> BorrowRecord { get; set; }
         public DbSet<Member> Member { get; set; }
         public DbSet<BookAuthor> BookAuthor { get; set; }
+        
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -115,7 +116,7 @@ namespace QuanLyThuVien.AppContext
                     var authorName = $"{authorFirstNames[rand.Next(authorFirstNames.Length)]} {authorLastNames[rand.Next(authorLastNames.Length)]}";
                     books.Add(new Book
                     {
-                        ISBN = $"978-604-{rand.Next(100000, 999999)}-{i % 10}",
+                        ISBN = $"aa-{rand.Next(1000, 9999)}-{i % 10}",
                         Title = title,
                         Author = authorName,
                         Publisher = publisherNames[rand.Next(publisherNames.Length)],
@@ -126,6 +127,24 @@ namespace QuanLyThuVien.AppContext
                         CreatedDate = DateTime.Now
                     });
                 }
+                for (int i = 1; i <= 100; i++)
+                {
+                    var title = $"Cuốn sách số {i} về {categoryNames[rand.Next(categoryNames.Length)]}";
+                    var authorName = $"{authorFirstNames[rand.Next(authorFirstNames.Length)]} {authorLastNames[rand.Next(authorLastNames.Length)]}";
+                    books.Add(new Book
+                    {
+                        ISBN = $"vn-{ rand.Next(1000, 9999) }-{ i % 10 }", // Always 13 digits
+                        Title = title,
+                        Author = authorName,
+                        Publisher = publisherNames[rand.Next(publisherNames.Length)],
+                        PublishedDate = DateTime.Now.AddYears(-rand.Next(1, 10)),
+                        CategoryId = categoryIds[rand.Next(categoryIds.Count)],
+                        TotalCopies = rand.Next(2, 10),
+                        AvailableCopies = rand.Next(1, 10),
+                        CreatedDate = DateTime.Now
+                    });
+                }
+
                 context.Book.AddRange(books);
                 context.SaveChanges();
 

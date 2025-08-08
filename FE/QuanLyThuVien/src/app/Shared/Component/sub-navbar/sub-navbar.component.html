@@ -1,0 +1,30 @@
+<nav *ngIf="isLogin" class="navbar navbar-expand-lg navbar-dark bg-gradient-primary">
+  <div class="container-fluid">
+   
+
+    <!-- Menu -->
+    <div class="collapse navbar-collapse" id="libraryNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateBorrowBook()" data-bs-toggle="modal" data-bs-target="#borrowModal">📚 Mượn sách</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateReturnBook()" data-bs-toggle="modal" data-bs-target="#returnModal">↩️ Trả sách</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateExtendBook()" data-bs-toggle="modal" data-bs-target="#renewModal">🔄 Gia hạn</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" (click)="navigateSearchBook()" data-bs-toggle="modal" data-bs-target="#searchModal">📋 Tra cứu</a>
+        </li>
+
+      </ul>
+
+     
+    </div>
+  </div>
+</nav>
