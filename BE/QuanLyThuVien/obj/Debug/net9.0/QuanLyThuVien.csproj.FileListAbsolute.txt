@@ -186,3 +186,4 @@ G:\CaoHoc\CSDL_PhanTan\QuanLyThuVien\BE\QuanLyThuVien\obj\Debug\net9.0\refint\Qu
 G:\CaoHoc\CSDL_PhanTan\QuanLyThuVien\BE\QuanLyThuVien\obj\Debug\net9.0\QuanLyThuVien.pdb
 G:\CaoHoc\CSDL_PhanTan\QuanLyThuVien\BE\QuanLyThuVien\obj\Debug\net9.0\QuanLyThuVien.genruntimeconfig.cache
 G:\CaoHoc\CSDL_PhanTan\QuanLyThuVien\BE\QuanLyThuVien\obj\Debug\net9.0\ref\QuanLyThuVien.dll
+G:\CaoHoc\CSDL_PhanTan\QuanLyThuVien\BE\QuanLyThuVien\obj\Debug\net9.0\QuanLyThuVien.sourcelink.json

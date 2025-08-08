@@ -1,0 +1,396 @@
+
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="mb-1">
+            <i class="fas fa-plus-circle text-primary me-2"></i>
+            Mượn Sách Mới
+          </h2>
+          <p class="text-muted mb-0">Tạo phiếu mượn sách cho thành viên thư viện</p>
+        </div>
+        <button 
+          class="btn btn-outline-secondary" 
+          (click)="refresh()" 
+          [disabled]="loading">
+          <i class="fas fa-sync-alt me-1" [class.fa-spin]="loading"></i>
+          Làm mới
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="row">
+    <div class="col">
+      <div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Đang tải...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading" class="row">
+    <!-- Borrow Form -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-edit me-2"></i>
+            Thông Tin Mượn Sách
+          </h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="borrowForm" (ngSubmit)="onSubmit()" novalidate>
+            
+            <!-- Member Selection Section -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h6 class="fw-bold text-secondary mb-3">
+                  <i class="fas fa-user me-2"></i>
+                  Chọn Thành Viên
+                </h6>
+                
+                <!-- Member Search -->
+                <div class="mb-3">
+                  <label class="form-label">Tìm kiếm thành viên</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-search"></i>
+                    </span>
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      placeholder="Nhập tên, mã thành viên, email hoặc số điện thoại..."
+                      [value]="memberSearchTerm"
+                      (input)="onMemberSearch($event)">
+                    <button 
+                      *ngIf="memberSearchTerm"
+                      class="btn btn-outline-secondary" 
+                      type="button"
+                      (click)="clearMemberSearch()">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Member Selection -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Thành viên *</label>
+                  <select 
+                    class="form-select form-select-lg" 
+                    formControlName="memberId"
+                    [class.is-invalid]="isFieldInvalid('memberId')">
+                    <option value="">-- Chọn thành viên --</option>
+                    <option 
+                      *ngFor="let member of filteredMembers" 
+                      [value]="member.memberId">
+                      {{ member.memberCode }} - {{ member.fullName }}
+                      <span *ngIf="member.email"> ({{ member.email }})</span>
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">
+                    {{ getFieldError('memberId') }}
+                  </div>
+                  
+                  <!-- Selected Member Info -->
+                  <div *ngIf="selectedMember" class="mt-2 p-3 bg-light rounded">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <strong>Mã thành viên:</strong> {{ selectedMember.memberCode }}<br>
+                        <strong>Họ tên:</strong> {{ selectedMember.fullName }}
+                      </div>
+                      <div class="col-md-6">
+                        <span *ngIf="selectedMember.email">
+                          <strong>Email:</strong> {{ selectedMember.email }}<br>
+                        </span>
+                        <span *ngIf="selectedMember.phone">
+                          <strong>Điện thoại:</strong> {{ selectedMember.phone }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Book Selection Section -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h6 class="fw-bold text-secondary mb-3">
+                  <i class="fas fa-book me-2"></i>
+                  Chọn Sách
+                </h6>
+                
+                <!-- Book Search -->
+                <div class="mb-3">
+                  <label class="form-label">Tìm kiếm sách</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-search"></i>
+                    </span>
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      placeholder="Nhập tên sách, tác giả, ISBN hoặc nhà xuất bản..."
+                      [value]="bookSearchTerm"
+                      (input)="onBookSearch($event)">
+                    <button 
+                      *ngIf="bookSearchTerm"
+                      class="btn btn-outline-secondary" 
+                      type="button"
+                      (click)="clearBookSearch()">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Book Selection -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Sách *</label>
+                  <select 
+                    class="form-select form-select-lg" 
+                    formControlName="bookId"
+                    [class.is-invalid]="isFieldInvalid('bookId')">
+                    <option value="">-- Chọn sách --</option>
+                    <option 
+                      *ngFor="let book of filteredBooks" 
+                      [value]="book.bookId"
+                      [disabled]="book.availableCopies === 0">
+                      {{ book.title }} - {{ book.author }} 
+                      (Còn: {{ book.availableCopies }}/{{ book.totalCopies }})
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">
+                    {{ getFieldError('bookId') }}
+                  </div>
+                  
+                  <!-- Selected Book Info -->
+                  <div *ngIf="selectedBook" class="mt-2 p-3 bg-light rounded">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <h6 class="mb-2 text-primary">{{ selectedBook.title }}</h6>
+                        <p class="mb-1"><strong>Tác giả:</strong> {{ selectedBook.author }}</p>
+                        <p class="mb-1" *ngIf="selectedBook.publisher">
+                          <strong>Nhà xuất bản:</strong> {{ selectedBook.publisher }}
+                        </p>
+                        <p class="mb-0"><strong>ISBN:</strong> {{ selectedBook.isbn }}</p>
+                      </div>
+                      <div class="col-md-4 text-end">
+                        <div class="availability-info">
+                          <span class="badge fs-6" 
+                                [class.bg-success]="selectedBook.availableCopies > 0"
+                                [class.bg-danger]="selectedBook.availableCopies === 0">
+                            <i class="fas fa-book me-1"></i>
+                            Còn {{ selectedBook.availableCopies }}/{{ selectedBook.totalCopies }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="selectedBook.availableCopies === 0" class="alert alert-warning mt-2 mb-0">
+                      <i class="fas fa-exclamation-triangle me-2"></i>
+                      Sách hiện tại đã hết. Vui lòng chọn sách khác.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Borrow Details Section -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h6 class="fw-bold text-secondary mb-3">
+                  <i class="fas fa-calendar-alt me-2"></i>
+                  Chi Tiết Mượn
+                </h6>
+                
+                <div class="row">
+                  <!-- Borrow Days -->
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Số ngày mượn *</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-calendar-day"></i>
+                      </span>
+                      <input 
+                        type="number" 
+                        class="form-control form-control-lg" 
+                        formControlName="borrowDays"
+                        min="1" 
+                        max="30"
+                        [class.is-invalid]="isFieldInvalid('borrowDays')">
+                      <span class="input-group-text">ngày</span>
+                    </div>
+                    <div class="invalid-feedback">
+                      {{ getFieldError('borrowDays') }}
+                    </div>
+                  </div>
+
+                  <!-- Due Date Display -->
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Ngày trả dự kiến</label>
+                    <div class="form-control form-control-lg bg-light" style="cursor: not-allowed;">
+                      <i class="fas fa-calendar-check text-success me-2"></i>
+                      <span *ngIf="calculatedDueDate; else noDueDate" class="fw-bold text-success">
+                        {{ calculatedDueDate | date:'EEEE, dd/MM/yyyy':'vi' }}
+                      </span>
+                      <ng-template #noDueDate>
+                        <span class="text-muted">Chưa xác định</span>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Ghi chú</label>
+                  <textarea 
+                    class="form-control" 
+                    formControlName="notes"
+                    rows="3"
+                    maxlength="500"
+                    placeholder="Ghi chú thêm về phiếu mượn (không bắt buộc)...">
+                  </textarea>
+                  <div class="form-text">
+                    {{ borrowForm.get('notes')?.value?.length || 0 }}/500 ký tự
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-lg"
+                [disabled]="borrowForm.invalid || submitting || !isBookAvailable">
+                <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!submitting" class="fas fa-plus-circle me-2"></i>
+                {{ submitting ? 'Đang xử lý...' : 'Tạo Phiếu Mượn' }}
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-outline-secondary"
+                (click)="resetForm()"
+                [disabled]="submitting">
+                <i class="fas fa-undo me-2"></i>
+                Làm mới form
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Information Panel -->
+    <div class="col-lg-4">
+      <!-- Quick Summary -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+          <h6 class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>
+            Tóm Tắt Phiếu Mượn
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="summary-item mb-3" *ngIf="selectedMember">
+            <strong class="text-secondary">Thành viên:</strong><br>
+            <span class="text-primary fs-6">{{ selectedMemberInfo }}</span>
+          </div>
+          
+          <div class="summary-item mb-3" *ngIf="selectedBook">
+            <strong class="text-secondary">Sách:</strong><br>
+            <span class="text-primary fs-6">{{ selectedBookInfo }}</span>
+          </div>
+          
+          <div class="summary-item mb-3" *ngIf="borrowForm.get('borrowDays')?.value">
+            <strong class="text-secondary">Thời gian mượn:</strong><br>
+            <span class="text-success fs-6">
+              {{ borrowForm.get('borrowDays')?.value }} ngày
+            </span>
+          </div>
+          
+          <div class="summary-item mb-0" *ngIf="calculatedDueDate">
+            <strong class="text-secondary">Ngày trả:</strong><br>
+            <span class="text-warning fs-6">
+              {{ calculatedDueDate | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+
+          <hr *ngIf="selectedMember || selectedBook">
+          
+          <div *ngIf="!selectedMember && !selectedBook" class="text-center text-muted">
+            <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+            <p class="small mb-0">Chọn thành viên và sách để xem tóm tắt</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rules & Guidelines -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning text-dark">
+          <h6 class="mb-0">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Quy Định Mượn Sách
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="rule-item d-flex align-items-start mb-2">
+            <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+            <span class="small">Mỗi thành viên tối đa 5 cuốn cùng lúc</span>
+          </div>
+          <div class="rule-item d-flex align-items-start mb-2">
+            <i class="fas fa-clock text-primary me-2 mt-1"></i>
+            <span class="small">Thời gian mượn: 1-30 ngày</span>
+          </div>
+          <div class="rule-item d-flex align-items-start mb-2">
+            <i class="fas fa-redo text-info me-2 mt-1"></i>
+            <span class="small">Có thể gia hạn 1 lần (tối đa 14 ngày)</span>
+          </div>
+          <div class="rule-item d-flex align-items-start mb-2">
+            <i class="fas fa-money-bill-wave text-warning me-2 mt-1"></i>
+            <span class="small">Phí phạt trễ hạn: 5.000đ/ngày/cuốn</span>
+          </div>
+          <div class="rule-item d-flex align-items-start">
+            <i class="fas fa-shield-alt text-danger me-2 mt-1"></i>
+            <span class="small">Bồi thường nếu mất hoặc hỏng sách</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h6 class="mb-0">
+            <i class="fas fa-chart-bar me-2"></i>
+            Thống Kê
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6">
+              <div class="stat-item">
+                <h4 class="text-primary mb-0">{{ availableBooks.length }}</h4>
+                <small class="text-muted">Sách có sẵn</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="stat-item">
+                <h4 class="text-success mb-0">{{ members.length }}</h4>
+                <small class="text-muted">Thành viên</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

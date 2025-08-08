@@ -23,6 +23,9 @@
                     <li class="nav-item">
                         <a class="nav-link" (click)="navigateAuthorManage()">Quản lý tác giả</a>
                     </li>
+                    <li *ngIf="isLogin" class="nav-item">
+                        <button class="btn btn-outline-danger" (click)="logout()">Đăng Xuất</button>
+                    </li>
                 </ul>
             </div>
         </div>

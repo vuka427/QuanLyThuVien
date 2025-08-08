@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using QuanLyThuVien.Data;
+using System.Data;
 
 namespace QuanLyThuVien.Controllers
 {
@@ -49,7 +50,6 @@ namespace QuanLyThuVien.Controllers
                 }
 
                 var token = GetToken(authClaims);
-
                 var roles = await _userManager.GetRolesAsync(user);
 
                 return new ApiResponse
@@ -57,21 +57,29 @@ namespace QuanLyThuVien.Controllers
                     Success = true,
                     Data = new
                     {
+                        status =  true,
                         token = new JwtSecurityTokenHandler().WriteToken(token),
                         expiration = token.ValidTo,
                         user = new { user.Id, user.UserName, user.FullName, user.Email, user.PhoneNumber, roles },
+                        message = "Đăng nhập thành công",
                     },
                     Message = "Đăng nhập thành công",
                     StatusCode =  StatusCodes.Status200OK
                 };
-
-
             }
             return new ApiResponse
             {
                 Success = false,
                 StatusCode = StatusCodes.Status200OK,
-                Message = "Đăng nhập thất bại"
+                Message = "Đăng nhập thất bại",
+                Data = new
+                {
+                    status = false,
+                    token = "",
+                    expiration = "",
+                    user = new {},
+                    message = "Đăng nhập thất bại",
+                }
             };
         }
 

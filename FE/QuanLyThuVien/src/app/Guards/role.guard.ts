@@ -28,16 +28,16 @@ export class RoleGuard implements CanActivate {
     }
 
     // Kiểm tra permissions
-    if (requiredPermissions && requiredPermissions.length > 0) {
-      const hasAllPermissions = requiredPermissions.every(permission => 
-        this.authService.hasPermission(permission)
-      );
+    // if (requiredPermissions && requiredPermissions.length > 0) {
+    //   const hasAllPermissions = requiredPermissions.every(permission => 
+    //     this.authService.hasPermission(permission)
+    //   );
       
-      if (!hasAllPermissions) {
-        this.router.navigate(['/unauthorized']);
-        return false;
-      }
-    }
+    //   if (!hasAllPermissions) {
+    //     this.router.navigate(['/unauthorized']);
+    //     return false;
+    //   }
+    // }
 
     return true;
   }

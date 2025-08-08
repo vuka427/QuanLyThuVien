@@ -5,16 +5,18 @@ import { map, catchError } from 'rxjs/operators';
 import { ApiBaseService, ApiResponse } from './api-base.service';
 import { User } from '../Models/user';
 import { StorageService } from './storage.service';
+import { SweetAlertService } from './sweet-alert.service';
 
 export interface LoginRequest {
   username: string;
   password: string;
 }
-
 export interface LoginResponse {
+  status: string;
   token: string;
   user: User;
   expiration: number;
+  message: string;
 }
 
 @Injectable({
@@ -29,6 +31,7 @@ export class AuthService {
   private storageService = inject(StorageService);
 
   constructor(
+    private sweetAlert: SweetAlertService,
     private baseApi: ApiBaseService,
     private router: Router
   ) {
@@ -78,6 +81,7 @@ export class AuthService {
     this.storageService.removeItem('user');
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+    this.sweetAlert.success("Đăng xuất thành công!")
     this.router.navigate(['/login']);
   }
 

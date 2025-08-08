@@ -1,0 +1,320 @@
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  border-bottom: none;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(255, 193, 7, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table tbody tr {
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.table tbody tr.table-active {
+  background-color: rgba(255, 193, 7, 0.15);
+  border-left-color: #ffc107;
+}
+
+.table tbody tr.table-danger {
+  border-left-color: #dc3545;
+}
+
+.table tbody tr.table-warning {
+  border-left-color: #ffc107;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  color: #000;
+}
+
+.btn-warning:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.5);
+}
+
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid #e0e6ed;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.15);
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border: 1px solid #e0e6ed;
+  border-radius: 8px 0 0 8px;
+  color: #6c757d;
+}
+
+.form-check {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.form-check:hover {
+  background-color: #e9ecef;
+  border-color: #ffc107;
+}
+
+.form-check-input:checked + .form-check-label {
+  color: #000;
+}
+
+.form-check:has(.form-check-input:checked) {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-color: #ffc107;
+}
+
+.form-check-input {
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: 0.1em;
+}
+
+.form-check-input:checked {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+.bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.1);
+  border: 1px solid rgba(25, 135, 84, 0.2);
+}
+
+.text-truncate {
+  max-width: 200px;
+}
+
+.alert {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.alert-warning {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Extension option cards */
+.form-check {
+  position: relative;
+  overflow: hidden;
+}
+
+.form-check::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.form-check:has(.form-check-input:checked)::before {
+  background-color: #ffc107;
+}
+
+/* Status badges with pulse animation */
+.badge.bg-danger {
+  animation: pulse-danger 2s infinite;
+}
+
+@keyframes pulse-danger {
+  0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+.badge.bg-warning {
+  animation: pulse-warning 2s infinite;
+}
+
+@keyframes pulse-warning {
+  0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+/* Loading state */
+.spinner-border {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Icon animations */
+.fas {
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:hover .fas {
+  transform: scale(1.1);
+}
+
+.card-title .fas {
+  color: inherit;
+}
+
+/* Success/Error message animations */
+.alert {
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Calendar preview card */
+.bg-success-subtle .card-body {
+  background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.05) 100%);
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+  
+  .btn-lg {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+  }
+  
+  .form-check {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Custom scrollbar for table */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Hover effects for interactive elements */
+.table tbody tr {
+  cursor: pointer;
+}
+
+.form-check-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Focus improvements */
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  outline: none;
+}
+
+/* Card transitions */
+.card {
+  will-change: box-shadow, transform;
+}
+
+/* Extension preview highlight */
+.text-success {
+  font-weight: 600;
+}

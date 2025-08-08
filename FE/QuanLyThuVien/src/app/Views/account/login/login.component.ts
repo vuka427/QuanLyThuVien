@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } 
 import { Router } from '@angular/router';
 import { AuthService, LoginRequest } from '../../../Services/auth.service';
 import { StorageService } from '../../../Services/storage.service';
+import { SweetAlertService } from '../../../Services/sweet-alert.service';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private sweetAlert: SweetAlertService
   ) {}
 
   ngOnInit(): void {
@@ -61,16 +63,25 @@ export class LoginComponent implements OnInit {
 
       this.authService.login(loginData).subscribe({
         next: (response) => {
+
+          if(response.status){
+            this.sweetAlert.success(response.message,"Đăng nhập")
+            this.router.navigate(["home"]);
+          }else{
+            this.sweetAlert.error(response.message,"Đăng nhập")
+            this.isLoading = false;
+            return;
+          }
           // Handle remember me
           if (this.loginForm.value.rememberMe) {
-            localStorage.setItem('rememberedUsername', loginData.username);
+            this.storageService.setItem('rememberedUsername', loginData.username);
           } else {
-            localStorage.removeItem('rememberedUsername');
+            this.storageService.removeItem('rememberedUsername');
           }
 
           // Redirect to intended page or dashboard
-          const redirectUrl = localStorage.getItem('redirectUrl') || '/dashboard';
-          localStorage.removeItem('redirectUrl');
+          const redirectUrl = this.storageService.getItem('redirectUrl') || '/home';
+          this.storageService.removeItem('redirectUrl');
           this.router.navigate([redirectUrl]);
         },
         error: (error) => {

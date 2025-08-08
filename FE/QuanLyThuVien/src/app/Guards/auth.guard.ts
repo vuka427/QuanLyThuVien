@@ -1,13 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CanActivate, CanActivateChild, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../Services/auth.service';
+import { StorageService } from '../Services/storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate, CanActivateChild {
-  
+   private storageService = inject(StorageService);
   constructor(
     private authService: AuthService,
     private router: Router
@@ -33,7 +34,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     }
 
     // Lưu URL để redirect sau khi đăng nhập
-    localStorage.setItem('redirectUrl', url);
+    this.storageService.setItem('redirectUrl', url);
     this.router.navigate(['/login']);
     return false;
   }

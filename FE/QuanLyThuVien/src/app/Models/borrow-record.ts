@@ -13,5 +13,5 @@ export interface BorrowRecord {
   finePaid: boolean;
   notes?: string;
   member?: Member;
-  book?: Book;
+  book?: Book ;
 }

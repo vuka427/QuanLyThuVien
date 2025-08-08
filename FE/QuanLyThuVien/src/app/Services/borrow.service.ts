@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Book } from '../Models/book';
 import { BookCreateDto } from '../Models/book-create.dto';
 import { Author } from '../Models/author';
@@ -44,5 +44,31 @@ export class BorrowService {
 
   payFine(id: number): Observable<any> {
     return this.baseApi.put(`borrow/${id}/pay-fine`, {});
+  }
+    getAvailableBooks(): Observable<Book[]> {
+    return this.baseApi.get<Book[]>(`book/available`);
+  }
+  getActiveMembers(): Observable<Member[]> {
+    return this.baseApi.get<Member[]>(`member`)
+      .pipe(
+        map(members => members.filter(m => m.isActive))
+      );
+  }
+  canMemberBorrowMore(memberId: number): Observable<boolean> {
+    return this.getMemberCurrentBorrows(memberId)
+      .pipe(
+        map(borrows => {
+          const currentBorrowsCount = borrows.filter(b => !b.isReturned).length;
+          return currentBorrowsCount < 5; // Giả sử giới hạn là 5 sách
+        })
+      );
+  }
+    getMemberCurrentBorrows(memberId: number): Observable<BorrowRecord[]> {
+    return this.baseApi.get<BorrowRecord[]>(`member/${memberId}/current-borrows`);
+  }
+  calculateDueDate(borrowDays: number): Date {
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + borrowDays);
+    return dueDate;
   }
 }

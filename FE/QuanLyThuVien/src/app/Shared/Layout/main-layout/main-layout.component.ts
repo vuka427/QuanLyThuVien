@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../../Services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css']
 })
 export class MainLayoutComponent implements OnInit {
-
-  constructor(private router: Router) { }
+  isLogin:boolean = false; 
+  constructor(private router: Router,  private auth: AuthService) { }
 
   ngOnInit() {
-
+    this.isLogin = this.auth.isLoggedIn();
   }
   navigateHome() {
     this.router.navigate(["home"])
@@ -25,6 +27,9 @@ export class MainLayoutComponent implements OnInit {
   }
    navigateAuthorManage(){
     this.router.navigate(["author"])
+  }
+  logout(){
+    this.auth.logout();
   }
 
 }
