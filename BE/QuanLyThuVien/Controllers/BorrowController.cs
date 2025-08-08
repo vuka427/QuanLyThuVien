@@ -78,8 +78,6 @@ namespace QuanLyThuVien.Controllers
         [HttpGet("overdue")]
         public async Task<ActionResult<ApiResponse>> GetOverdueBooks()
         {
-           
-
             var now = DateTime.UtcNow;
             const decimal finePerDay = 5000m;
 
