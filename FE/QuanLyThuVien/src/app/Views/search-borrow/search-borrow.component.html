@@ -1,3 +1,333 @@
-<p>
-  search-borrow works!
-</p>
+<!-- Search Borrow Component -->
+<div class="container-fluid p-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="text-primary mb-1">
+            <i class="fas fa-search me-2"></i>Tìm kiếm mượn sách
+          </h2>
+          <p class="text-muted mb-0">Quản lý và tìm kiếm các bản ghi mượn sách</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-success" (click)="exportToCSV()">
+            <i class="fas fa-download me-1"></i>Xuất CSV
+          </button>
+          <button class="btn btn-outline-secondary" (click)="toggleFilters()">
+            <i class="fas fa-filter me-1"></i>Bộ lọc
+            <i class="fas" [ngClass]="showFilters ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Form -->
+  <form [formGroup]="searchForm" class="mb-4">
+    <!-- Quick Search Row -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-light">
+            <i class="fas fa-search text-muted"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Tìm theo tên sách, tác giả, ISBN, tên thành viên, mã thành viên..."
+            formControlName="term">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" formControlName="status">
+          <option *ngFor="let status of statusOptions" [value]="status.value">
+            {{ status.label }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button type="button" class="btn btn-outline-danger w-100" (click)="clearSearch()">
+          <i class="fas fa-times me-1"></i>Xóa bộ lọc
+        </button>
+      </div>
+    </div>
+
+    <!-- Advanced Filters (Collapsible) -->
+    <div class="collapse" [class.show]="showFilters">
+      <div class="card border-0 bg-light">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label text-muted small">Thể loại</label>
+              <select class="form-select" formControlName="categoryId">
+                <option value="">Tất cả thể loại</option>
+                <option *ngFor="let category of categories" [value]="category.categoryId">
+                  {{ category.categoryName }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-muted small">Tác giả</label>
+              <select class="form-select" formControlName="authorId">
+                <option value="">Tất cả tác giả</option>
+                <option *ngFor="let author of authors" [value]="author.authorId">
+                  {{ author.fullName }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-muted small">Thành viên</label>
+              <select class="form-select" formControlName="memberId">
+                <option value="">Tất cả thành viên</option>
+                <option *ngFor="let member of members" [value]="member.memberId">
+                  {{ member.fullName }} ({{ member.memberCode }})
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Results Summary -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted">
+          Hiển thị {{ (currentPage - 1) * itemsPerPage + 1 }} - 
+          {{ getMinValue(currentPage * itemsPerPage, totalItems) }} 
+          trong tổng số {{ totalItems }} kết quả
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted small">Hiển thị:</span>
+          <select class="form-select form-select-sm" style="width: auto" 
+                  [value]="itemsPerPage" (change)="changeItemsPerPage($event.target)">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div class="mt-2 text-muted">Đang tải dữ liệu...</div>
+  </div>
+
+  <!-- Results Table -->
+  <div *ngIf="!isLoading" class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" class="border-0 ps-4">Thông tin mượn</th>
+              <th scope="col" class="border-0">Thành viên</th>
+              <th scope="col" class="border-0">Sách</th>
+              <th scope="col" class="border-0">Ngày mượn</th>
+              <th scope="col" class="border-0">Ngày hết hạn</th>
+              <th scope="col" class="border-0">Trạng thái</th>
+              <th scope="col" class="border-0">Phí phạt</th>
+              <th scope="col" class="border-0 text-center pe-4">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- No results -->
+            <tr *ngIf="paginatedBorrows.length === 0">
+              <td colspan="8" class="text-center py-5 text-muted">
+                <i class="fas fa-search fa-3x mb-3 text-muted opacity-50"></i>
+                <div>Không tìm thấy kết quả nào</div>
+                <small>Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</small>
+              </td>
+            </tr>
+
+            <!-- Borrow records -->
+            <tr *ngFor="let borrow of paginatedBorrows; let i = index">
+              <td class="ps-4">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded p-2 text-center" style="min-width: 40px;">
+                      <i class="fas fa-book"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="fw-semibold">#{{ borrow.borrowId }}</div>
+                    <small class="text-muted" *ngIf="borrow.notes">{{ borrow.notes }}</small>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="me-2">
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width: 32px; height: 32px;">
+                      <i class="fas fa-user fa-sm"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="fw-semibold">{{ borrow.member?.fullName }}</div>
+                    <small class="text-muted">{{ borrow.member?.memberCode }}</small>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div>
+                  <div class="fw-semibold mb-1">{{ borrow.book?.title }}</div>
+                  <small class="text-muted d-block">{{ borrow.book?.author }}</small>
+                  <small class="text-muted">ISBN: {{ borrow.book?.isbn }}</small>
+                </div>
+              </td>
+
+              <td>
+                <div class="text-muted">
+                  {{ formatDate(borrow.borrowDate) }}
+                </div>
+              </td>
+
+              <td>
+                <div [class]="getBorrowStatus(borrow).status === 'overdue' ? 'text-danger' : 'text-muted'">
+                  {{ formatDate(borrow.dueDate) }}
+                  <div *ngIf="getBorrowStatus(borrow).status === 'overdue' && !borrow.isReturned" 
+                       class="small text-danger mt-1">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Quá hạn {{ getDaysOverdue(borrow.dueDate) }} ngày
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <span class="badge rounded-pill" 
+                      [ngClass]="'bg-' + getBorrowStatus(borrow).class">
+                  {{ getBorrowStatus(borrow).text }}
+                </span>
+                <div *ngIf="borrow.returnDate" class="small text-muted mt-1">
+                  Trả: {{ formatDate(borrow.returnDate) }}
+                </div>
+              </td>
+
+              <td>
+                <div *ngIf="borrow.fineAmount > 0">
+                  <div class="fw-semibold text-danger">
+                    {{ formatCurrency(borrow.fineAmount) }}
+                  </div>
+                  <span class="badge rounded-pill" 
+                        [ngClass]="borrow.finePaid ? 'bg-success' : 'bg-warning text-dark'">
+                    {{ borrow.finePaid ? 'Đã thanh toán' : 'Chưa thanh toán' }}
+                  </span>
+                </div>
+                <div *ngIf="borrow.fineAmount === 0" class="text-muted">
+                  Không có phí
+                </div>
+              </td>
+
+              <td class="pe-4">
+                <div class="d-flex gap-1 justify-content-center">
+                  <!-- Return book button -->
+                  <button *ngIf="!borrow.isReturned" 
+                          class="btn btn-outline-success btn-sm"
+                          (click)="onReturnBook(borrow.borrowId)"
+                          title="Trả sách">
+                    <i class="fas fa-undo"></i>
+                  </button>
+
+                  <!-- Pay fine button -->
+                  <button *ngIf="borrow.fineAmount > 0 && !borrow.finePaid" 
+                          class="btn btn-outline-warning btn-sm"
+                          (click)="onPayFine(borrow.borrowId)"
+                          title="Thanh toán phí phạt">
+                    <i class="fas fa-credit-card"></i>
+                  </button>
+
+                  <!-- View details button -->
+                  <button class="btn btn-outline-primary btn-sm"
+                          title="Xem chi tiết">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <nav *ngIf="totalPages > 1" aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="changePage(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      </li>
+      
+      <li class="page-item" 
+          *ngFor="let page of [].constructor(totalPages); let i = index"
+          [class.active]="i + 1 === currentPage">
+        <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
+      </li>
+      
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="changePage(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Statistics Cards (Optional) -->
+  <div class="row mt-4" *ngIf="filteredBorrows.length > 0">
+    <div class="col-md-3">
+      <div class="card bg-primary bg-opacity-10 border-0">
+        <div class="card-body text-center">
+          <i class="fas fa-book fa-2x text-primary mb-2"></i>
+          <h5 class="text-primary">{{ filteredBorrows.length }}</h5>
+          <small class="text-muted">Tổng số bản ghi</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning bg-opacity-10 border-0">
+        <div class="card-body text-center">
+          <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+          <h5 class="text-warning">
+            {{ currentBorrowsCount  }}
+          </h5>
+          <small class="text-muted">Đang mượn</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-danger bg-opacity-10 border-0">
+        <div class="card-body text-center">
+          <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+          <h5 class="text-danger">
+            {{ overdueBorrowsCount  }}
+          </h5>
+          <small class="text-muted">Quá hạn</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success bg-opacity-10 border-0">
+        <div class="card-body text-center">
+          <i class="fas fa-check fa-2x text-success mb-2"></i>
+          <h5 class="text-success">
+            {{ returnedBorrowsCount  }}
+          </h5>
+          <small class="text-muted">Đã trả</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

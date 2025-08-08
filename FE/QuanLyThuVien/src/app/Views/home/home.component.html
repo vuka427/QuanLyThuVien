@@ -93,32 +93,32 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>08:30 07/08/2025</td>
-                                    <td>DG001</td>
-                                    <td>Nguyễn Văn A</td>
-                                    <td>MS001</td>
-                                    <td>Lập trình Python</td>
-                                    <td><span class="badge bg-success">Mượn</span></td>
-                                    <td><span class="badge bg-info">Hoàn thành</span></td>
+                                <tr *ngFor="let transaction of recentTransactions">
+                                    <td>{{transaction.borrowDate | date:'HH:mm dd/MM/yyyy'}}</td>
+                                    <td>{{transaction.member?.memberCode}}</td>
+                                    <td>{{transaction.member?.fullName}}</td>
+                                    <td>{{transaction.book?.isbn}}</td>
+                                    <td>{{transaction.book?.title}}</td>
+                                    <td>
+                                        <span class="badge" 
+                                              [class.bg-success]="!transaction.isReturned" 
+                                              [class.bg-info]="transaction.isReturned" 
+                                              [class.bg-warning]="!transaction.isReturned && isOverdue(transaction)">
+                                            {{!transaction.isReturned ? 'Mượn' : 'Trả'}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" 
+                                              [class.bg-warning]="!transaction.isReturned && !isOverdue(transaction)"
+                                              [class.bg-danger]="!transaction.isReturned && isOverdue(transaction)"
+                                              [class.bg-success]="transaction.isReturned">
+                                            {{transaction.isReturned ? 'Đã trả' : 
+                                              (isOverdue(transaction) ? 'Quá hạn' : 'Đang mượn')}}
+                                        </span>
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td>08:15 07/08/2025</td>
-                                    <td>DG002</td>
-                                    <td>Trần Thị B</td>
-                                    <td>MS002</td>
-                                    <td>Cơ sở dữ liệu</td>
-                                    <td><span class="badge bg-info">Trả</span></td>
-                                    <td><span class="badge bg-info">Hoàn thành</span></td>
-                                </tr>
-                                <tr>
-                                    <td>08:00 07/08/2025</td>
-                                    <td>DG003</td>
-                                    <td>Lê Văn C</td>
-                                    <td>MS003</td>
-                                    <td>Thuật toán</td>
-                                    <td><span class="badge bg-warning">Gia hạn</span></td>
-                                    <td><span class="badge bg-info">Hoàn thành</span></td>
+                                <tr *ngIf="recentTransactions.length === 0">
+                                    <td colspan="7" class="text-center">Không có giao dịch nào</td>
                                 </tr>
                             </tbody>
                         </table>

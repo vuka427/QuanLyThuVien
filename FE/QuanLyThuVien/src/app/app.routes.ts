@@ -43,6 +43,16 @@ export const routes: Routes = [
         loadComponent: () => import('./Views/return-book/return-book.component').then(m => m.ReturnBookComponent), 
         canActivate: [AuthGuard]
       },
+      { 
+        path: 'extend-borrow', 
+        loadComponent: () => import('./Views/extend-borrow/extend-borrow.component').then(m => m.ExtendBorrowComponent), 
+        canActivate: [AuthGuard]
+      },
+      { 
+        path: 'search-book', 
+        loadComponent: () => import('./Views/search-borrow/search-borrow.component').then(m => m.SearchBorrowComponent), 
+        canActivate: [AuthGuard]
+      },
       // các route chính khác
     ]
   },
